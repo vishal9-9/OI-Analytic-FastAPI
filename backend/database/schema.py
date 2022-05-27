@@ -1,4 +1,3 @@
-from typing import Optional
 from pydantic import BaseModel
 
 class login_user(BaseModel):
@@ -6,10 +5,10 @@ class login_user(BaseModel):
     password: str
 
 class show_user(BaseModel):
-    name: str
+    fullname: str
     email: str
-    role_id: str
-    c_id: str
+    role_id: int
+    c_id: int
     working_under: int
     class Config:
         orm_mode = True
