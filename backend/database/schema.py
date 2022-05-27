@@ -14,7 +14,7 @@ class show_user(BaseModel):
     class Config:
         orm_mode = True
 
-class add_user(BaseModel):
+class add_user_superadmin(BaseModel):
     c_id: int
     fullname: str
     email: str
