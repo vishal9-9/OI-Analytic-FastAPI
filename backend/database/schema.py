@@ -6,8 +6,23 @@ class login_user(BaseModel):
     password: str
 
 class show_user(BaseModel):
-    id : int
     name: str
     email: str
+    role_id: str
+    c_id: str
+    working_under: int
     class Config:
         orm_mode = True
+
+class add_user(BaseModel):
+    c_id: int
+    fullname: str
+    email: str
+    password: str
+    role_id: int
+    conact_no : str
+    working_under: int
+    dob: str
+    class Config:
+        orm_mode = True
+
