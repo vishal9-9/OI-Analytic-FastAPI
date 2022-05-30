@@ -36,3 +36,7 @@ class add_company(BaseModel):
     branch: str
     address: str
 
+class list_company(add_company,BaseModel):
+    company_id: int
+    class Config:
+        orm_mode = True

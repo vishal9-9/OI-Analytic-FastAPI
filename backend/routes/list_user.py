@@ -8,11 +8,11 @@ from functions.oauth import current_user
 from typing import List
 
 router = APIRouter(
-    tags = ['List User']
+    tags = ['List Of User']
 )
 
 @router.get('/user_list', response_model = List[show_user])
-def list_user(db: Session = Depends(database.get_db), cur_user: show_user = Depends(current_user)):
+def list_of_user(db: Session = Depends(database.get_db), cur_user: show_user = Depends(current_user)):
     role_id = cur_user.role_id
     role = check_role.check_role(role_id)
     print(role)

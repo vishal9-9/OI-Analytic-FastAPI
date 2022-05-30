@@ -1,4 +1,3 @@
-import json
 from fastapi import APIRouter, Depends, HTTPException, status
 from database.schema import add_company, show_user
 from database.database import get_db
