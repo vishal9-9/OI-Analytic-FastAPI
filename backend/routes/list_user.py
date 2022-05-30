@@ -30,6 +30,32 @@ def list_of_user(db: Session = Depends(database.get_db), cur_user: show_user = D
     else:
         raise HTTPException(status_code = status.HTTP_401_UNAUTHORIZED)
 
+@router.get('/list_user/{id}',response_model = show_user)
+def user_with_id(id: int ,db: Session = Depends(database.get_db) ,cur_user: show_user = Depends(current_user)):
+    role = check_role.check_role(cur_user.role_id)
+    if role == 'Superadmin':
+        res = db.query(Users).get(id)
+        if res:
+            return res
+        else:
+            raise HTTPException(status_code = status.HTTP_404_NOT_FOUND)
+    elif role == 'Admin':
+        res = db.execute(f'select * from users where id = {id} and role_id != 0 and c_id = {cur_user.c_id}').fetchone()
+        if res:
+            return res
+        else:
+            raise HTTPException(status_code = status.HTTP_404_NOT_FOUND)
+    elif role == 'Supervisor':
+        query = f'select * from users where id = {id} and c_id = {cur_user.c_id} and role_id not in(0,1)'
+        res = db.execute(query).fetchone()
+        if res:
+            return res
+        else:
+            raise HTTPException(status_code = status.HTTP_404_NOT_FOUND)   
+    else:
+        raise HTTPException(status_code = status.HTTP_401_UNAUTHORIZED) 
+    
+
 @router.post('/user/{id}')
 def user_with_id(id: int,user: update_user,db: Session = Depends(database.get_db),cur_user: show_user = Depends(current_user)):
     role = check_role.check_role(cur_user.role_id)
