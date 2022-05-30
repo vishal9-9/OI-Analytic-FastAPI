@@ -9,3 +9,6 @@ def new_company(company_schema):
     database.add(new_company)
     database.commit()
     database.close()
+
+def update_company(company_schema):
+    pass

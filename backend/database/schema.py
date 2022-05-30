@@ -1,5 +1,5 @@
+from datetime import date
 from pydantic import BaseModel
-from typing import Optional
 
 class login_user(BaseModel):
     email: str
@@ -22,9 +22,18 @@ class add_user_superadmin(BaseModel):
     role_id: int
     conact_no : str
     working_under: int
-    dob: str
+    dob: date
     class Config:
         orm_mode = True
+
+class update_user(BaseModel):
+    c_id: int
+    fullname: str
+    email: str
+    role_id: int
+    contact_no : str
+    working_under: int
+    dob: date
 
 class add_company(BaseModel):
     company_name: str
