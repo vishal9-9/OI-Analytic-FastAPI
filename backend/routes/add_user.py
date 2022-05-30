@@ -14,23 +14,29 @@ router = APIRouter(
 @router.post('/user_add')
 def add_user(user: add_user_superadmin ,db: Session = Depends(get_db),cur_user : show_user =  Depends(current_user)):
     role_id = cur_user.role_id
-    print(role_id)
     role = check_role.check_role(int(role_id))
     if role == 'Superadmin':
         check = db.query(Users).filter( Users.email == user.email).first()
         if check:
-            return HTTPException(status_code = status.HTTP_405_METHOD_NOT_ALLOWED)
+            raise HTTPException(status_code = status.HTTP_405_METHOD_NOT_ALLOWED)
         else:
             new_role = user.role_id 
-            if new_role in [0,1,2,3]:
-                addnew_user.new_user(user)
-                return 'User Added Successfully'
+            companyid = db.execute('select company_id from company').fetchall()
+            id_list = []
+            for company_id in companyid:
+                id_list.append(company_id[0])
+            if user.c_id in id_list:
+                if new_role in [0,1,2,3]:
+                    addnew_user.new_user(user)
+                    return 'User Added Successfully'
+                else:
+                    return 'GIVEN ROLE ID IS INVALID'
             else:
-                return 'GIVEN ROLE ID IS INVALID'
+                return 'Company Id Is Invalid'
     elif role == 'Admin':
         check = db.query(Users).filter( Users.email == user.email).first()
         if check:
-            return HTTPException(status_code = status.HTTP_405_METHOD_NOT_ALLOWED)
+            raise HTTPException(status_code = status.HTTP_405_METHOD_NOT_ALLOWED)
         else:
             new_role = user.role_id
             if new_role in [1,2,3]:
@@ -42,7 +48,7 @@ def add_user(user: add_user_superadmin ,db: Session = Depends(get_db),cur_user :
     elif role == 'Supervisor':
         check = db.query(Users).filter( Users.email == user.email).first()
         if check:
-            return HTTPException(status_code = status.HTTP_405_METHOD_NOT_ALLOWED)
+            raise HTTPException(status_code = status.HTTP_405_METHOD_NOT_ALLOWED)
         else:
             new_role = user.role_id
             if new_role in [2,3]:
@@ -52,4 +58,4 @@ def add_user(user: add_user_superadmin ,db: Session = Depends(get_db),cur_user :
             else:
                 return 'GIVEN ROLE ID IS INVALID'
     else:
-        return 'You Cannot Add Anyone'
+        raise HTTPException(status_code = status.HTTP_401_UNAUTHORIZED)

@@ -1,4 +1,5 @@
 from pydantic import BaseModel
+from typing import Optional
 
 class login_user(BaseModel):
     email: str
@@ -24,4 +25,14 @@ class add_user_superadmin(BaseModel):
     dob: str
     class Config:
         orm_mode = True
+
+class add_company(BaseModel):
+    company_name: str
+    country: str
+    state: str
+    city: str
+    pincode: str
+    department: str
+    branch: str
+    address: str
 
