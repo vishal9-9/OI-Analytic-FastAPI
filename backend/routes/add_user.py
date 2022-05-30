@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends,HTTPException,status
 from database.models import Users
 from database.database import get_db
-from functions import check_role,addnew_user
+from functions import check_role,addnew_user,list_company_id
 from sqlalchemy.orm import Session
 from database.database import get_db
 from database.schema import add_user_superadmin, show_user
@@ -21,10 +21,8 @@ def add_user(user: add_user_superadmin ,db: Session = Depends(get_db),cur_user :
             raise HTTPException(status_code = status.HTTP_405_METHOD_NOT_ALLOWED)
         else:
             new_role = user.role_id 
-            companyid = db.execute('select company_id from company').fetchall()
-            id_list = []
-            for company_id in companyid:
-                id_list.append(company_id[0])
+            id_list = list_company_id.list_of_cid()
+            print(id_list)
             if user.c_id in id_list:
                 if new_role in [0,1,2,3]:
                     addnew_user.new_user(user)
