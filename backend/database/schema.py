@@ -1,5 +1,5 @@
 from datetime import date
-import pydantic
+from typing import List
 import re
 from pydantic import BaseModel,EmailStr,validator,ValidationError
 
@@ -68,3 +68,6 @@ class list_company(add_company,BaseModel):
     company_id: int
     class Config:
         orm_mode = True
+
+class reset_pass(BaseModel):
+    email: List[EmailStr]
