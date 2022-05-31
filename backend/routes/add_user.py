@@ -11,7 +11,7 @@ router = APIRouter(
     tags = ['Add User']
 )
 
-@router.post('/user_add')
+@router.post('/user')
 def add_user(user: add_user_superadmin ,db: Session = Depends(get_db),cur_user : show_user =  Depends(current_user)):
     role_id = cur_user.role_id
     role = check_role.check_role(int(role_id))

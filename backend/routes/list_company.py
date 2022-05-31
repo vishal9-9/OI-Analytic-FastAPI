@@ -11,7 +11,7 @@ router = APIRouter(
     tags = ['List Company']
 )
 
-@router.get('/company_list',response_model = List[list_company])
+@router.get('/company',response_model = List[list_company])
 def list_of_company(db: Session = Depends(get_db),cur_user: show_user = Depends(current_user)):
     role = check_role.check_role(cur_user.role_id)
     if role == 'Superadmin':
@@ -20,7 +20,7 @@ def list_of_company(db: Session = Depends(get_db),cur_user: show_user = Depends(
     else:
         raise HTTPException(status_code = status.HTTP_401_UNAUTHORIZED)
 
-@router.get('/company_list/{company_id}',response_model = list_company)
+@router.get('/company/{company_id}',response_model = list_company)
 def company_with_id(company_id: int,db: Session = Depends(get_db),cur_user: show_user = Depends(current_user)):
     role = check_role.check_role(cur_user.role_id)
     if role == 'Superadmin':

@@ -9,7 +9,7 @@ router = APIRouter(
     tags = ['Soft Delete Company']
 )
 
-@router.get('/soft_del_company/{id}')
+@router.delete('/company/{id}')
 def soft_delete_company(id: int,db: Session = Depends(get_db),cur_user: show_user = Depends(current_user)):
     role = check_role.check_role(cur_user.role_id)
     if role == 'Superadmin':
@@ -26,6 +26,6 @@ def soft_delete_company(id: int,db: Session = Depends(get_db),cur_user: show_use
                 db.commit()
                 return ('done')
             else:
-                return 'No Company with Such User Id'
+                return 'No Company with Such Id'
     else:
         raise HTTPException(status_code = status.HTTP_401_UNAUTHORIZED)

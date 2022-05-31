@@ -13,6 +13,7 @@ class Company(Base):
     branch = Column(String(75),nullable=False)
     address = Column(String(250),nullable=False)
     created_at = Column(TIMESTAMP,nullable=False)
+    updated_at = Column(TIMESTAMP)
     isactive = Column(Integer,nullable=False)
 
 class Users(Base):
@@ -26,6 +27,7 @@ class Users(Base):
     working_under = Column(Integer,nullable=False)
     dob = Column(Date,nullable=False)
     created_at = Column(TIMESTAMP,nullable=False)
+    updated_at = Column(TIMESTAMP)
     isactive = Column(Integer,nullable=False)
     role_id = Column(Integer,ForeignKey('role.role_id'))
 

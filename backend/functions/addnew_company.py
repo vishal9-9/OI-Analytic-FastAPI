@@ -10,5 +10,8 @@ def new_company(company_schema):
     database.commit()
     database.close()
 
-def update_company(company_schema):
-    pass
+def update_company(company_schema,id):
+    query = f'update company set company_name = "{company_schema.company_name}",country = "{company_schema.country}", state = "{company_schema.state}", city = "{company_schema.city}", pincode = "{company_schema.pincode}", department = "{company_schema.department}", branch = "{company_schema.branch}", address = "{company_schema.address}", updated_at = "{datetime.datetime.now()}"  where company_id = {id}'
+    db.execute(query)
+    db.commit()
+    db.close()
