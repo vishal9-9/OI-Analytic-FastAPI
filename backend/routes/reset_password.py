@@ -5,6 +5,9 @@ from sqlalchemy.orm import Session
 from database.models import Users
 from fastapi_mail import MessageSchema,ConnectionConfig,FastMail
 from routes.password import password
+from functions import passhash
+import random
+import string
 
 router = APIRouter(
     tags = ["Reset Password"]
@@ -15,6 +18,13 @@ async def reset_password(request: reset_pass, db: Session = Depends(get_db)):
     if request.email:
         exist = db.query(Users).filter(Users.email == request.email).first()
         if exist:
+            letters = string.ascii_lowercase   
+            new_password = ''.join(random.choice(letters) for i in range(8))
+            h_pass = passhash.hash(new_password)
+            query = f'update users set password = "{h_pass}" where email = "{exist.email}"'
+            db.execute(query)
+            db.commit()
+            db.close()
             email = request.email
             conf = ConnectionConfig(
                 MAIL_USERNAME = "alexmercerazon@gmail.com",
@@ -31,7 +41,7 @@ async def reset_password(request: reset_pass, db: Session = Depends(get_db)):
             message = MessageSchema(
                 subject = "Reset Password",
                 recipients = email,
-                body = 'New Password = 123456789', 
+                body = f'New Password id {new_password}', 
             )
             fm = FastMail(conf)
             await fm.send_message(message)
