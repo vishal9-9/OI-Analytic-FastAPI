@@ -14,3 +14,5 @@ app.include_router(add_company.router)
 app.include_router(list_company.router)
 app.include_router(soft_del_company.router)
 app.include_router(reset_password.router)
+
+#routes are done
