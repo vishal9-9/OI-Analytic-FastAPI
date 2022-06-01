@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from database import database
 from database.models import Users
-from database.schema import show_user, update_user
+from database.schema import show_user, update_user,list_user
 from functions import check_role,addnew_user,check_supervisor
 from functions.oauth import current_user
 from functions import list_company_id
@@ -12,7 +12,7 @@ router = APIRouter(
     tags = ['User Panel']
 )
 
-@router.get('/user', response_model = List[show_user])
+@router.get('/user', response_model = List[list_user])
 def list_of_user(db: Session = Depends(database.get_db), cur_user: show_user = Depends(current_user)):
     role_id = cur_user.role_id
     role = check_role.check_role(role_id)
@@ -31,7 +31,7 @@ def list_of_user(db: Session = Depends(database.get_db), cur_user: show_user = D
     else:
         raise HTTPException(status_code = status.HTTP_401_UNAUTHORIZED)
 
-@router.get('/user/{id}',response_model = show_user)
+@router.get('/user/{id}',response_model = list_user)
 def user_with_id(id: int ,db: Session = Depends(database.get_db) ,cur_user: show_user = Depends(current_user)):
     role = check_role.check_role(cur_user.role_id)
     if role == 'Superadmin':
@@ -57,7 +57,7 @@ def user_with_id(id: int ,db: Session = Depends(database.get_db) ,cur_user: show
         raise HTTPException(status_code = status.HTTP_401_UNAUTHORIZED) 
 
 
-@router.get('/supervisor',response_model = List[show_user])
+@router.get('/supervisor',response_model = List[list_user])
 def supervisor_check(db: Session = Depends(database.get_db),cur_user: show_user = Depends(current_user)):
     role = check_role.check_role(cur_user.role_id)
     if role == 'Superadmin':

@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, status
-from database.schema import add_company, show_user
+from database.schema import show_user, add_company
 from database.database import get_db
 from database.models import Company
 from functions.oauth import current_user

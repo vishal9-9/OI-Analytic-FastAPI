@@ -1,4 +1,6 @@
 from marshmallow import Schema, fields
+# from webargs import fields
+from pydantic import BaseModel
 
 class add_company(Schema):
     company_name = fields.String(required = True)
