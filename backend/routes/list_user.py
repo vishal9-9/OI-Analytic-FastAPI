@@ -89,22 +89,22 @@ def supervisor_check(db: Session = Depends(database.get_db),cur_user: show_user 
 
     
 @router.put('/user/{id}')
-def user_with_id(id: int,user: update_user,db: Session = Depends(database.get_db),cur_user: show_user = Depends(current_user)):
+def user_with_id(id: int,c_user: update_user,db: Session = Depends(database.get_db),cur_user: show_user = Depends(current_user)):
     role = check_role.check_role(cur_user.role_id)
-    if check_supervisor.check_supervisor(user.working_under):
+    if check_supervisor.check_supervisor(c_user.working_under):
         if role == 'Superadmin':
             user_toupdate = db.query(Users).get(id)
-            if user and cur_user.role_id <= user_toupdate.role_id:
-                addnew_user.update_user(user,id)
+            if c_user and cur_user.role_id <= user_toupdate.role_id:
+                addnew_user.update_user(c_user,id)
                 return 'User Updated'
             else:
                 raise HTTPException(status_code = status.HTTP_404_NOT_FOUND)
         elif role == 'Admin':
             user_toupdate = db.query(Users).get(id)
             if cur_user.c_id == user_toupdate.c_id:
-                if user and cur_user.role_id <= user_toupdate.role_id:
-                    if user.role_id in [1,2,3]:
-                        addnew_user.update_user(user,id)
+                if c_user and cur_user.role_id <= user_toupdate.role_id:
+                    if c_user.role_id in [1,2,3] and c_user.c_id == cur_user.c_id:
+                        addnew_user.update_user(c_user,id)
                         return 'User Updated'
                     else:
                         raise HTTPException(status_code = status.HTTP_401_UNAUTHORIZED)
@@ -115,9 +115,9 @@ def user_with_id(id: int,user: update_user,db: Session = Depends(database.get_db
         elif role == 'Supervisor':
             user_toupdate = db.query(Users).get(id)
             if cur_user.c_id == user_toupdate.c_id:
-                if user:
-                    if user.role_id in [2,3] and cur_user.role_id <= user_toupdate.role_id:
-                        addnew_user.update_user(user,id)
+                if c_user:
+                    if c_user.role_id in [2,3] and cur_user.role_id <= user_toupdate.role_id and c_user.c_id == cur_user.c_id:
+                        addnew_user.update_user(c_user,id)
                         return 'User Updated'
                     else:
                         raise HTTPException(status_code = status.HTTP_401_UNAUTHORIZED)
@@ -128,7 +128,7 @@ def user_with_id(id: int,user: update_user,db: Session = Depends(database.get_db
         else:
             raise HTTPException(status_code = status.HTTP_401_UNAUTHORIZED)
     else:
-        return f'{user.id} is not a SuperVisor'
+        return f'{cur_user.id} is not a SuperVisor'
 
 @router.delete('/user/{id}')
 def delete_user(id: int,db: Session = Depends(database.get_db),cur_user: show_user = Depends(current_user)):
