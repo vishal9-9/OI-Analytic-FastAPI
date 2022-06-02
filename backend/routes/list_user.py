@@ -123,7 +123,7 @@ def user_with_id(id: int,c_user: update_user,db: Session = Depends(database.get_
                     addnew_user.update_user(c_user,id)
                     return 'User Updated'
             else:
-                raise HTTPException(status_code = status.HTTP_404_NOT_FOUND)
+                raise HTTPException(status_code = status.HTTP_401_UNAUTHORIZED)
         elif role == 'Admin':
             user_toupdate = db.query(Users).get(id)
             if cur_user.c_id == user_toupdate.c_id:
