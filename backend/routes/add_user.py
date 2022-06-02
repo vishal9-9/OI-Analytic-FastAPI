@@ -14,48 +14,71 @@ router = APIRouter(
 @router.post('/user')
 def add_user(user: add_user_superadmin ,db: Session = Depends(get_db),cur_user : show_user =  Depends(current_user)):
     role_id = cur_user.role_id
-    role = check_role.check_role(int(role_id))
-    if check_supervisor.check_supervisor(user.working_under):
-        if role == 'Superadmin':
-            check = db.query(Users).filter( Users.email == user.email).first()
-            if check:
-                raise HTTPException(status_code = status.HTTP_405_METHOD_NOT_ALLOWED)
+    role = check_role.check_role(int(role_id))    
+    if role == 'Superadmin':
+        check = db.query(Users).filter( Users.email == user.email).first()
+        if check:
+            raise HTTPException(status_code = status.HTTP_405_METHOD_NOT_ALLOWED)
+        else:
+            new_role = user.role_id 
+            id_list = list_company_id.list_of_cid()
+            if user.c_id in id_list:
+                if new_role in [0,1,2,3]:
+                    if new_role == 3:
+                        check_bool = check_supervisor.check_supervisor(user.working_under)
+                        if check_bool:
+                            addnew_user.new_user(user)
+                            return 'User Added Successfully'
+                        else:
+                            return f'{user.working_under} is not a Supervisor'
+                    else:
+                        addnew_user.new_user(user)
+                        return 'User Added Successfully'
+                else:
+                    return 'GIVEN ROLE ID IS INVALID'
             else:
-                new_role = user.role_id 
-                id_list = list_company_id.list_of_cid()
-                if user.c_id in id_list:
-                    if new_role in [0,1,2,3]:
+                return 'Company Id Is Invalid'
+    elif role == 'Admin':
+        check = db.query(Users).filter( Users.email == user.email).first()
+        if check:
+            raise HTTPException(status_code = status.HTTP_405_METHOD_NOT_ALLOWED)
+        else:
+            new_role = user.role_id
+            if new_role in [1,2,3]:
+                if new_role == 3:
+                    check_bool = check_supervisor.check_supervisor(user.working_under)
+                    if check_bool:
+                        user.c_id = cur_user.c_id
                         addnew_user.new_user(user)
                         return 'User Added Successfully'
                     else:
-                        return 'GIVEN ROLE ID IS INVALID'
+                        return f'{user.working_under} is not a Supervisor'
                 else:
-                    return 'Company Id Is Invalid'
-        elif role == 'Admin':
-            check = db.query(Users).filter( Users.email == user.email).first()
-            if check:
-                raise HTTPException(status_code = status.HTTP_405_METHOD_NOT_ALLOWED)
-            else:
-                new_role = user.role_id
-                if new_role in [1,2,3]:
                     user.c_id = cur_user.c_id
                     addnew_user.new_user(user)
                     return 'User Added Successfully'
-                else:
-                    return 'GIVEN ROLE ID IS INVALID'
-        elif role == 'Supervisor':
-            check = db.query(Users).filter( Users.email == user.email).first()
-            if check:
-                raise HTTPException(status_code = status.HTTP_405_METHOD_NOT_ALLOWED)
             else:
-                new_role = user.role_id
-                if new_role in [2,3]:
-                    user.c_id = cur_user.c_id
-                    addnew_user.new_user(user)
-                    return 'User Added Successfully'
-                else:
-                    return 'GIVEN ROLE ID IS INVALID'
+                return 'GIVEN ROLE ID IS INVALID'
+    elif role == 'Supervisor':
+        check = db.query(Users).filter( Users.email == user.email).first()
+        if check:
+            raise HTTPException(status_code = status.HTTP_405_METHOD_NOT_ALLOWED)
         else:
-            raise HTTPException(status_code = status.HTTP_401_UNAUTHORIZED)
+            new_role = user.role_id
+            if new_role in [2,3]:
+                if new_role == 3:
+                    check_bool = check_supervisor.check_supervisor(user.working_under)
+                    if check_bool:
+                        user.c_id = cur_user.c_id
+                        addnew_user.new_user(user)
+                        return 'User Added Successfully'
+                    else:
+                        return f'{user.working_under} is not a Supervisor'
+                else:
+                    user.c_id = cur_user.c_id
+                    addnew_user.new_user(user)
+                    return 'User Added Successfully'
+            else:
+                return 'GIVEN ROLE ID IS INVALID'
     else:
-        return f'{user.working_under} is not a Supervisor'
+        raise HTTPException(status_code = status.HTTP_401_UNAUTHORIZED)
