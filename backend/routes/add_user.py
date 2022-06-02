@@ -32,12 +32,12 @@ def add_user(user: add_user_superadmin ,db: Session = Depends(get_db),cur_user :
                         else:
                             return f'{user.working_under} is not a Supervisor'
                     elif new_role == 2:
-                        check_bool = check_supervisor.check_admin(user.working_under)
+                        check_bool = check_supervisor.check_admin(user.c_id,user.working_under)
                         if check_bool:
                             addnew_user.new_user(user)
                             return 'User Added Successfully'
                         else:
-                            return f'{user.working_under} is not a Supervisor'
+                            return f'{user.working_under} is not a Admin or Admin Does not belong to Same Company'
                     elif new_role == 1:
                         user.working_under = cur_user.id                       
                         addnew_user.new_user(user)
@@ -67,13 +67,13 @@ def add_user(user: add_user_superadmin ,db: Session = Depends(get_db),cur_user :
                     else:
                         return f'{user.working_under} is not a Supervisor'
                 elif new_role == 2:
-                    check_bool = check_supervisor.check_admin(user.working_under)
+                    check_bool = check_supervisor.check_admin(user.c_id,user.working_under)
                     if check_bool:
                         user.c_id = cur_user.c_id
                         addnew_user.new_user(user)
                         return 'User Added Successfully'
                     else:
-                        return f'{user.working_under} is not a Supervisor'
+                        return f'{user.working_under} is not a Admin or Admin Does not belong to Same Company'
                 elif new_role == 1:
                     user.working_under = 1
                     user.c_id = cur_user.c_id
@@ -97,13 +97,13 @@ def add_user(user: add_user_superadmin ,db: Session = Depends(get_db),cur_user :
                     else:
                         return f'{user.working_under} is not a Supervisor'
                 else:
-                    check_bool = check_supervisor.check_admin(user.working_under)
+                    check_bool = check_supervisor.check_admin(user.c_id,user.working_under)
                     if check_bool:
                         user.c_id = cur_user.c_id
                         addnew_user.new_user(user)
                         return 'User Added Successfully'
                     else:
-                        return f'{user.working_under} is not Admin'
+                        return f'{user.working_under} is not Admin or Admin Does not belong to Same Company'
             else:
                 return 'GIVEN ROLE ID IS INVALID'
     else:

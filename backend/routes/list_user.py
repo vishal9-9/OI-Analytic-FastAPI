@@ -98,7 +98,7 @@ def user_with_id(id: int,c_user: update_user,db: Session = Depends(database.get_
     if c_user.email not in already_exist:
         if role == 'Superadmin':
             user_toupdate = db.query(Users).get(id)
-            if c_user.working_under in [0,1,2,3] and cur_user.role_id <= user_toupdate.role_id:
+            if c_user.role_id in [0,1,2,3] and cur_user.role_id <= user_toupdate.role_id:
                 if c_user.role_id == 3:
                     check_bool = check_supervisor.check_supervisor(c_user.working_under)
                     if check_bool:
@@ -107,12 +107,12 @@ def user_with_id(id: int,c_user: update_user,db: Session = Depends(database.get_
                     else:
                         return f'{cur_user.id} is not a SuperVisor'
                 elif c_user.role_id == 2:
-                    check_bool = check_supervisor.check_admin(c_user.working_under)
+                    check_bool = check_supervisor.check_admin(c_user.c_id,c_user.working_under)
                     if check_bool:
                         addnew_user.update_user(c_user,id)
                         return 'User Updated'
                     else:
-                        return f'{c_user.working_under} is Not a Admin'
+                        return f'{c_user.working_under} is Not a Admin or Admin Does not belong to Same Company'
                 elif c_user.role_id == 1:
                     c_user.working_under = cur_user.id
                     addnew_user.update_user(c_user,id)
@@ -134,12 +134,12 @@ def user_with_id(id: int,c_user: update_user,db: Session = Depends(database.get_
                             addnew_user.update_user(c_user,id)
                             return 'User Updated'
                         elif c_user.role_id == 2:
-                            check_bool = check_supervisor.check_admin(c_user.working_under)
+                            check_bool = check_supervisor.check_admin(c_user.c_id,c_user.working_under)
                             if check_bool:
                                 addnew_user.update_user(c_user,id)
                                 return 'User Updated'
                             else:
-                                return f'{cur_user.id} is not a SuperVisor'
+                                return f'{cur_user.id} is not a Admin or Admin Does not belong to Same Company'
                         elif c_user.role_id == 3:
                             check_bool = check_supervisor.check_supervisor(c_user.working_under)
                             if check_bool:
@@ -166,12 +166,12 @@ def user_with_id(id: int,c_user: update_user,db: Session = Depends(database.get_
                             else:
                                 return f'{cur_user.id} is not a SuperVisor'
                         elif c_user.role_id == 2:
-                            check_bool = check_supervisor.check_admin(c_user.working_under)
+                            check_bool = check_supervisor.check_admin(c_user.c_id,c_user.working_under)
                             if check_bool:
                                 addnew_user.update_user(c_user,id)
                                 return 'User Updated'
                             else:
-                                return f'{c_user.working_under} is Not a Admin'
+                                return f'{c_user.working_under} is Not a Admin or Admin Does not belong to Same Company'
                     else:
                         raise HTTPException(status_code = status.HTTP_401_UNAUTHORIZED)
                 else:
@@ -186,6 +186,9 @@ def user_with_id(id: int,c_user: update_user,db: Session = Depends(database.get_
 @router.delete('/user/{id}')
 def delete_user(id: int,db: Session = Depends(database.get_db),cur_user: show_user = Depends(current_user)):
     role = check_role.check_role(cur_user.role_id)
+    to_delete = db.query(Users).get(id)
+    if not to_delete:
+        return 'No User With Such ID'
     if role == 'Superadmin':
         query = 'delete from users where id = {id}'
         db.execute(query)
