@@ -91,46 +91,94 @@ def supervisor_check(db: Session = Depends(database.get_db),cur_user: show_user 
 @router.put('/user/{id}')
 def user_with_id(id: int,c_user: update_user,db: Session = Depends(database.get_db),cur_user: show_user = Depends(current_user)):
     role = check_role.check_role(cur_user.role_id)
+    id_exist = db.query(Users).get(id)
+    if not id_exist:
+        return 'Invalid Id'
     already_exist = email_existdb.email_check(id)
     if c_user.email not in already_exist:
-        if check_supervisor.check_supervisor(c_user.working_under):
-            if role == 'Superadmin':
-                user_toupdate = db.query(Users).get(id)
-                if c_user and cur_user.role_id <= user_toupdate.role_id:
+        if role == 'Superadmin':
+            user_toupdate = db.query(Users).get(id)
+            if c_user.working_under in [0,1,2,3] and cur_user.role_id <= user_toupdate.role_id:
+                if c_user.role_id == 3:
+                    check_bool = check_supervisor.check_supervisor(c_user.working_under)
+                    if check_bool:
+                        addnew_user.update_user(c_user,id)
+                        return 'User Updated'
+                    else:
+                        return f'{cur_user.id} is not a SuperVisor'
+                elif c_user.role_id == 2:
+                    check_bool = check_supervisor.check_admin(c_user.working_under)
+                    if check_bool:
+                        addnew_user.update_user(c_user,id)
+                        return 'User Updated'
+                    else:
+                        return f'{c_user.working_under} is Not a Admin'
+                elif c_user.role_id == 1:
+                    c_user.working_under = 1
                     addnew_user.update_user(c_user,id)
                     return 'User Updated'
                 else:
+                    c_user.working_under = 0
+                    addnew_user.update_user(c_user,id)
+                    return 'User Updated'
+            else:
+                raise HTTPException(status_code = status.HTTP_404_NOT_FOUND)
+        elif role == 'Admin':
+            user_toupdate = db.query(Users).get(id)
+            if cur_user.c_id == user_toupdate.c_id:
+                if c_user and cur_user.role_id <= user_toupdate.role_id:
+                    if c_user.role_id in [1,2,3] and c_user.c_id == cur_user.c_id:
+                        if c_user.role_id == 1:
+                            c_user.working_under = 0
+                            addnew_user.update_user(c_user,id)
+                            return 'User Updated'
+                        elif c_user.role_id == 2:
+                            check_bool = check_supervisor.check_admin(c_user.working_under)
+                            if check_bool:
+                                addnew_user.update_user(c_user,id)
+                                return 'User Updated'
+                            else:
+                                return f'{cur_user.id} is not a SuperVisor'
+                        elif c_user.role_id == 3:
+                            check_bool = check_supervisor.check_supervisor(c_user.working_under)
+                            if check_bool:
+                                addnew_user.update_user(c_user,id)
+                                return 'User Updated'
+                            else:
+                                return f'{cur_user.id} is not a SuperVisor'                       
+                    else:
+                        raise HTTPException(status_code = status.HTTP_401_UNAUTHORIZED)
+                else:
                     raise HTTPException(status_code = status.HTTP_404_NOT_FOUND)
-            elif role == 'Admin':
-                user_toupdate = db.query(Users).get(id)
-                if cur_user.c_id == user_toupdate.c_id:
-                    if c_user and cur_user.role_id <= user_toupdate.role_id:
-                        if c_user.role_id in [1,2,3] and c_user.c_id == cur_user.c_id:
-                            addnew_user.update_user(c_user,id)
-                            return 'User Updated'
-                        else:
-                            raise HTTPException(status_code = status.HTTP_401_UNAUTHORIZED)
+            else:
+                raise HTTPException(status_code = status.HTTP_401_UNAUTHORIZED)
+        elif role == 'Supervisor':
+            user_toupdate = db.query(Users).get(id)
+            if cur_user.c_id == user_toupdate.c_id:
+                if c_user:
+                    if c_user.role_id in [2,3] and cur_user.role_id <= user_toupdate.role_id and c_user.c_id == cur_user.c_id:
+                        if c_user.role_id == 3:
+                            check_bool = check_supervisor.check_supervisor(c_user.working_under)
+                            if check_bool:
+                                addnew_user.update_user(c_user,id)
+                                return 'User Updated'
+                            else:
+                                return f'{cur_user.id} is not a SuperVisor'
+                        elif c_user.role_id == 2:
+                            check_bool = check_supervisor.check_admin(c_user.working_under)
+                            if check_bool:
+                                addnew_user.update_user(c_user,id)
+                                return 'User Updated'
+                            else:
+                                return f'{c_user.working_under} is Not a Admin'
                     else:
-                        raise HTTPException(status_code = status.HTTP_404_NOT_FOUND)
+                        raise HTTPException(status_code = status.HTTP_401_UNAUTHORIZED)
                 else:
-                    raise HTTPException(status_code = status.HTTP_401_UNAUTHORIZED)
-            elif role == 'Supervisor':
-                user_toupdate = db.query(Users).get(id)
-                if cur_user.c_id == user_toupdate.c_id:
-                    if c_user:
-                        if c_user.role_id in [2,3] and cur_user.role_id <= user_toupdate.role_id and c_user.c_id == cur_user.c_id:
-                            addnew_user.update_user(c_user,id)
-                            return 'User Updated'
-                        else:
-                            raise HTTPException(status_code = status.HTTP_401_UNAUTHORIZED)
-                    else:
-                        raise HTTPException(status_code = status.HTTP_404_NOT_FOUND)
-                else:
-                    raise HTTPException(status_code = status.HTTP_401_UNAUTHORIZED)
+                    raise HTTPException(status_code = status.HTTP_404_NOT_FOUND)
             else:
                 raise HTTPException(status_code = status.HTTP_401_UNAUTHORIZED)
         else:
-            return f'{cur_user.id} is not a SuperVisor'
+            raise HTTPException(status_code = status.HTTP_401_UNAUTHORIZED)
     else:
         return "Email Is Already Registered"
 

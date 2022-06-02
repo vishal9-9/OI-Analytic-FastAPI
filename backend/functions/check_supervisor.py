@@ -15,3 +15,17 @@ def check_supervisor(user_id: int):
             return False
     else:
         return False
+
+def check_admin(user_id: int):
+    query = f'select role_id from users where id = {user_id}'
+    res = db.execute(query).fetchone()
+    if res:
+        res = res[0]
+        new_query = f'select role_power from role where role_id = {res}'
+        out = db.execute(new_query).fetchone()
+        if out[0] == 'Admin':
+            return True
+        else:
+            return False
+    else:
+        return False

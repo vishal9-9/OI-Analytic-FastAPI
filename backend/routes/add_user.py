@@ -55,6 +55,7 @@ def add_user(user: add_user_superadmin ,db: Session = Depends(get_db),cur_user :
                         return f'{user.working_under} is not a Supervisor'
                 else:
                     user.c_id = cur_user.c_id
+                    user.working_under = 0
                     addnew_user.new_user(user)
                     return 'User Added Successfully'
             else:
