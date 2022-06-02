@@ -31,7 +31,20 @@ def add_user(user: add_user_superadmin ,db: Session = Depends(get_db),cur_user :
                             return 'User Added Successfully'
                         else:
                             return f'{user.working_under} is not a Supervisor'
+                    elif new_role == 2:
+                        check_bool = check_supervisor.check_admin(user.working_under)
+                        if check_bool:
+                            addnew_user.new_user(user)
+                            return 'User Added Successfully'
+                        else:
+                            return f'{user.working_under} is not a Supervisor'
+                    elif new_role == 1:
+                        user.working_under = cur_user.id                       
+                        addnew_user.new_user(user)
+                        return 'User Added Successfully'
                     else:
+                        user.working_under = 0
+                        user.c_id = 0
                         addnew_user.new_user(user)
                         return 'User Added Successfully'
                 else:
@@ -53,9 +66,17 @@ def add_user(user: add_user_superadmin ,db: Session = Depends(get_db),cur_user :
                         return 'User Added Successfully'
                     else:
                         return f'{user.working_under} is not a Supervisor'
-                else:
+                elif new_role == 2:
+                    check_bool = check_supervisor.check_admin(user.working_under)
+                    if check_bool:
+                        user.c_id = cur_user.c_id
+                        addnew_user.new_user(user)
+                        return 'User Added Successfully'
+                    else:
+                        return f'{user.working_under} is not a Supervisor'
+                elif new_role == 1:
+                    user.working_under = 1
                     user.c_id = cur_user.c_id
-                    user.working_under = 0
                     addnew_user.new_user(user)
                     return 'User Added Successfully'
             else:
@@ -76,9 +97,13 @@ def add_user(user: add_user_superadmin ,db: Session = Depends(get_db),cur_user :
                     else:
                         return f'{user.working_under} is not a Supervisor'
                 else:
-                    user.c_id = cur_user.c_id
-                    addnew_user.new_user(user)
-                    return 'User Added Successfully'
+                    check_bool = check_supervisor.check_admin(user.working_under)
+                    if check_bool:
+                        user.c_id = cur_user.c_id
+                        addnew_user.new_user(user)
+                        return 'User Added Successfully'
+                    else:
+                        return f'{user.working_under} is not Admin'
             else:
                 return 'GIVEN ROLE ID IS INVALID'
     else:

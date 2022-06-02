@@ -114,11 +114,12 @@ def user_with_id(id: int,c_user: update_user,db: Session = Depends(database.get_
                     else:
                         return f'{c_user.working_under} is Not a Admin'
                 elif c_user.role_id == 1:
-                    c_user.working_under = 1
+                    c_user.working_under = cur_user.id
                     addnew_user.update_user(c_user,id)
                     return 'User Updated'
                 else:
                     c_user.working_under = 0
+                    c_user.c_id = 0
                     addnew_user.update_user(c_user,id)
                     return 'User Updated'
             else:
