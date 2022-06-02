@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from database import database
 from database.models import Users
 from database.schema import show_user, update_user,list_user
-from functions import check_role,addnew_user,check_supervisor
+from functions import check_role,addnew_user,check_supervisor,email_existdb
 from functions.oauth import current_user
 from functions import list_company_id
 from typing import List
@@ -91,8 +91,8 @@ def supervisor_check(db: Session = Depends(database.get_db),cur_user: show_user 
 @router.put('/user/{id}')
 def user_with_id(id: int,c_user: update_user,db: Session = Depends(database.get_db),cur_user: show_user = Depends(current_user)):
     role = check_role.check_role(cur_user.role_id)
-    already_exist = db.query(Users).filter(Users.email == c_user.email).first()
-    if not already_exist:
+    already_exist = email_existdb.email_check(id)
+    if c_user.email not in already_exist:
         if check_supervisor.check_supervisor(c_user.working_under):
             if role == 'Superadmin':
                 user_toupdate = db.query(Users).get(id)
