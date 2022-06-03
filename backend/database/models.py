@@ -22,7 +22,7 @@ class Users(Base):
     c_id = Column(Integer, ForeignKey('company.company_id'))
     fullname = Column(String(75),nullable=False)
     email = Column(String(50),unique=True,nullable=False)
-    password = Column(String(50),nullable=False)
+    password = Column(String(250),nullable=False)
     contact_no = Column(String(16),nullable=False)
     working_under = Column(Integer,nullable=False)
     dob = Column(Date,nullable=False)

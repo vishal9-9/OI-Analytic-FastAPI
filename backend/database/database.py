@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy.ext.declarative import declarative_base
 import pymysql
 
-engine = create_engine('mysql+pymysql://root:password@localhost/alex')
+engine = create_engine('mysql+pymysql://root:password@localhost/FashionDB')
 Base = declarative_base()
 database = Session(bind = engine, expire_on_commit = False)
 

@@ -60,6 +60,13 @@ class add_user_superadmin(BaseModel):
     def name_validation(cls, v):
         return validation(v)
 
+    @validator('password')
+    def p_validation(cls,v):
+        if len(v) < 8:
+            raise ValueError('Length must atleast be 8 characters')
+        else:
+            return v
+
     @validator('contact_no')
     def validation(cls,v1: str):
         patt = re.compile(r'^[0-9]*$')
