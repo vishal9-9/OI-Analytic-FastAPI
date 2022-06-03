@@ -7,6 +7,8 @@ models.Base.metadata.create_all(engine)
 
 app = FastAPI()
 
+# SET [GLOBAL|SESSION] sql_mode='NO_AUTO_VALUE_ON_ZERO'
+
 app.include_router(login.router)
 app.include_router(add_user.router)
 app.include_router(list_user.router)

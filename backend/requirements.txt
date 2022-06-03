@@ -1,0 +1,8 @@
+fastapi==0.78.0
+fastapi_mail==1.0.8
+jose==1.0.0
+marshmallow==3.16.0
+pydantic==1.9.1
+PyMySQL==1.0.2
+SQLAlchemy==1.4.36
+Werkzeug==2.1.2
