@@ -13,10 +13,10 @@ router = APIRouter(
 @router.post('/login')
 def auth(request: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
     user = db.query(Users).filter(Users.email == request.username).first()
-    if not user.isactive == 1:
-        raise HTTPException(status_code = 404,detail = "User Deleted")
     if not user:
         raise HTTPException(status_code = 404,detail = "Email Incorrect")
+    if not user.isactive == 1:
+        raise HTTPException(status_code = 404,detail = "User Deleted")
     password = passhash.chech_hash(user.password, request.password)
     if not password:
         raise HTTPException(status_code = 404,detail = "Password Incorrect")

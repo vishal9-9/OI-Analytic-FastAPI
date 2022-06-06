@@ -128,7 +128,7 @@ def user_with_id(id: int,c_user: update_user,db: Session = Depends(database.get_
             user_toupdate = db.query(Users).get(id)
             if cur_user.c_id == user_toupdate.c_id:
                 if c_user and cur_user.role_id <= user_toupdate.role_id:
-                    if c_user.role_id in [1,2,3] and c_user.c_id == cur_user.c_id:
+                    if c_user.role_id in [2,3] and c_user.c_id == cur_user.c_id:
                         if c_user.role_id == 1:
                             c_user.working_under = 0
                             addnew_user.update_user(c_user,id)
@@ -157,7 +157,7 @@ def user_with_id(id: int,c_user: update_user,db: Session = Depends(database.get_
             user_toupdate = db.query(Users).get(id)
             if cur_user.c_id == user_toupdate.c_id:
                 if c_user:
-                    if c_user.role_id in [2,3] and cur_user.role_id <= user_toupdate.role_id and c_user.c_id == cur_user.c_id:
+                    if c_user.role_id in [3] and cur_user.role_id <= user_toupdate.role_id and c_user.c_id == cur_user.c_id:
                         if c_user.role_id == 3:
                             check_bool = check_supervisor.check_supervisor(c_user.working_under)
                             if check_bool:

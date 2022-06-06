@@ -57,7 +57,7 @@ def add_user(user: add_user_superadmin ,db: Session = Depends(get_db),cur_user :
             raise HTTPException(status_code = status.HTTP_405_METHOD_NOT_ALLOWED)
         else:
             new_role = user.role_id
-            if new_role in [1,2,3]:
+            if new_role in [2,3]:   
                 if new_role == 3:
                     check_bool = check_supervisor.check_supervisor(user.working_under)
                     if check_bool:
@@ -87,7 +87,7 @@ def add_user(user: add_user_superadmin ,db: Session = Depends(get_db),cur_user :
             raise HTTPException(status_code = status.HTTP_405_METHOD_NOT_ALLOWED)
         else:
             new_role = user.role_id
-            if new_role in [2,3]:
+            if new_role in [3]:
                 if new_role == 3:
                     check_bool = check_supervisor.check_supervisor(user.working_under)
                     if check_bool:
